@@ -1,0 +1,49 @@
+name: kicky monitor (one-shot)
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # every 5 minutes
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install
+
+      - name: Diagnostics (non-sensitive)
+        run: |
+          echo "Node: $(node -v)"
+          echo "NPM: $(npm -v)"
+          if [ -z "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then echo "DISCORD_WEBHOOK_URL: NOT SET"; else echo "DISCORD_WEBHOOK_URL: SET"; fi
+          if [ -z "${{ secrets.GITHUB_TOKEN }}" ]; then echo "GITHUB_TOKEN: NOT SET"; else echo "GITHUB_TOKEN: SET"; fi
+          if [ -z "${{ secrets.ROLE_ID_UPCOMING }}" ]; then echo "ROLE_ID_UPCOMING: NOT SET"; else echo "ROLE_ID_UPCOMING: SET"; fi
+
+      - name: Run monitor (one-shot)
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RUN_ONCE: 'true'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ROLE_ID_UPCOMING: ${{ secrets.ROLE_ID_UPCOMING }}
+        run: |
+          node monitor.js 2>&1 | tee monitor.log
+
+      - name: Upload monitor logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitor-log
+          path: monitor.log
