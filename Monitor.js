@@ -25,7 +25,7 @@ const CONFIG = {
   TIMESTAMP_SELECTOR: process.env.TIMESTAMP_SELECTOR || '',
   SEEN_STORE: process.env.SEEN_STORE || 'seen.json',
   WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL,
-  ROLE_ID_UPCOMING: '1531464694869786675',
+  ROLE_ID_UPCOMING: '1553007160001044590',
   COLORS: {
     upcoming: Number(process.env.COLOR_UPCOMING || 3447003),
     paid: Number(process.env.COLOR_PAID || 16766720),
