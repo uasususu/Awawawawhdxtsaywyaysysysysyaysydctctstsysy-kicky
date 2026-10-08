@@ -138,6 +138,9 @@ function buildWebhookPayload(card) {
     color,
     fields: [],
     timestamp: new Date().toISOString(),
+    footer: {
+      text: 'This is not server property. Please check https://kickugcleaks.zgameszone.workers.dev/#about for further information',
+    },
   };
   if (card.timestamp) embed.fields.push({ name: 'Release / Time', value: String(card.timestamp), inline: true });
   if (card.method) embed.fields.push({ name: 'Method', value: String(card.method), inline: true });
@@ -221,7 +224,7 @@ async function scrapeOnce(browser) {
       mainCandidates.forEach(n => candidateSet.add(n));
     }
     const makeCard = (el) => {
-      let title = el.querySelector('h2,h3,h1')?.innerText?.trim?.() || el.querySelector('strong')?.innerText?.trim?.() || (el.innerText||'').trim().split('\\n').map(s=>s.trim()).find(s=>s.length>2) || '';
+      let title = el.querySelector('h2,h3,h1')?.innerText?.trim?.() || el.querySelector('strong')?.innerText?.trim?.() || (el.innerText||'').trim().split('\n').map(s=>s.trim()).find(s=>s.length>0) || '';
       const anchors = Array.from(el.querySelectorAll('a')).map(a=>a.href).filter(Boolean);
       const link = anchors.find(a=>a.includes('roblox.com')) || anchors.find(a=>a.includes('/leaks/')) || anchors[0] || '';
       const candidateT = Array.from(el.querySelectorAll('*')).find(n => {
@@ -319,4 +322,3 @@ async function runOnceMode() {
   console.error('Fatal error:', err);
   process.exit(1);
 });
-  
